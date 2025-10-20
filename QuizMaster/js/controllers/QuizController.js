@@ -259,27 +259,125 @@ q.shuffledAnswers.forEach(answerText => {
         this.nextBtn.disabled = this.quiz.currentIndex === this.quiz.total - 1 && !this.quiz.isFinished();
     }
 
-    _showResults() {
-        const r = this.quiz.results();
-        this.finalScore.textContent = `Votre score : ${r.score}/${r.total} (${r.percent}%)`;
-        this.resultsDetails.innerHTML = "";
+_showResults() {
+    const r = this.quiz.results(); // { score, total, percent, details: [...] }
+    const correctCount = r.score;
+    const total = r.total;
+    const percentage = Math.round((correctCount / total) * 100);
 
-        // details list
-        const ul = document.createElement("ul");
-        r.details.forEach((d, i) => {
-            const li = document.createElement("li");
-            li.innerHTML = `<strong>Q${i+1}:</strong> ${d.question} <br>
-                <em>Ta réponse:</em> ${d.chosen || "<i>non répondu</i>"} — <em>Correcte:</em> ${d.correct} 
-                ${d.isCorrect ? "✅" : "❌"}`;
-            ul.appendChild(li);
-        });
+    const getScoreMessage = () => {
+        if (percentage >= 90) return "Outstanding! 🎉";
+        if (percentage >= 70) return "Great job! 👏";
+        if (percentage >= 50) return "Good effort! 👍";
+        return "Keep practicing! 💪";
+    };
 
-        this.resultsDetails.appendChild(ul);
+    // Helpers SVG (check / x)
+    const checkSvg = `
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M20 6L9 17l-5-5" stroke="rgb(34,197,94)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>`;
+    const xSvg = `
+      <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+        <path d="M6 6l12 12M18 6L6 18" stroke="rgb(239,68,68)" stroke-width="2" stroke-linecap="round"/>
+      </svg>`;
 
-        // show results container
-        this.quizContainer.style.display = "none";
-        this.resultsContainer.style.display = "block";
-    }
+    // On remplit la section résultats
+    this.resultsContainer.innerHTML = `
+      <div class="results-card">
+        <div class="results-head" style="text-align:center; margin-bottom: 8px;">
+          <h1>Quiz Complete!</h1>
+          <p class="results-subtle">${getScoreMessage()}</p>
+        </div>
+
+        <div class="results-metrics">
+          <div class="metric">
+            <div class="value">${correctCount}/${total}</div>
+            <div class="label">Correct Answers</div>
+          </div>
+          <div class="sep-vert"></div>
+          <div class="metric">
+            <div class="value">${percentage}%</div>
+            <div class="label">Score</div>
+          </div>
+        </div>
+
+        <div class="sep"></div>
+
+        <div class="results-section-title">Review Your Answers</div>
+        <div class="review-list" id="reviewList"></div>
+
+        <button id="restartBtn" type="button">
+          Start New Quiz
+        </button>
+      </div>
+    `;
+
+    // Construire la liste détaillée (on part de this.quiz.questions + réponses)
+    const list = this.resultsContainer.querySelector("#reviewList");
+
+    // On reconstitue ce dont on a besoin depuis le modèle
+    // r.details = [{ question, correct, chosen, isCorrect, category?, difficulty? }, ...]
+    r.details.forEach((d, i) => {
+        const isCorrect = d.isCorrect === true;
+        const wasAnswered = !!d.chosen;
+
+        // badges: si ton modèle n’expose pas category/difficulty dans details,
+        // tu peux les récupérer via this.quiz.questions[i]
+        let category = d.category, difficulty = d.difficulty;
+        if (!category || !difficulty) {
+            const q = this.quiz.questions[i];
+            category = q?.category || "";
+            difficulty = q?.difficulty || "";
+        }
+
+        const yourAnswerLine = wasAnswered && !isCorrect
+          ? `<div class="wrong">Your answer: ${d.chosen}</div>`
+          : "";
+
+        const notAnsweredLine = !wasAnswered
+          ? `<div class="muted">Not answered</div>`
+          : "";
+
+        const correctLine = `<div class="right">Correct answer: ${d.correct}</div>`;
+
+        const item = document.createElement("div");
+        item.className = "review-item";
+        item.innerHTML = `
+          <div class="review-row">
+            <div class="icon-dot ${isCorrect ? "correct" : "incorrect"}">
+              ${isCorrect ? checkSvg : xSvg}
+            </div>
+            <div class="review-content">
+              <div class="review-head">
+                <p class="review-qtext">
+                  <span class="results-subtle">Q${i + 1}:</span> ${d.question}
+                </p>
+                <div class="badges">
+                  <span class="badge secondary">${category}</span>
+                  <span class="badge outline">${difficulty}</span>
+                </div>
+              </div>
+              <div class="answers">
+                ${yourAnswerLine}
+                ${notAnsweredLine}
+                ${correctLine}
+              </div>
+            </div>
+          </div>
+        `;
+        list.appendChild(item);
+    });
+
+    // Bouton restart (réutilise ton handler déjà bindé dans _bindEvents)
+    const newRestartBtn = this.resultsContainer.querySelector("#restartBtn");
+    newRestartBtn.addEventListener("click", () => this._onRestart());
+
+    // Afficher la page résultats / cacher le quiz
+    this.quizContainer.style.display = "none";
+    this.resultsContainer.style.display = "flex";
+}
+
 
     _showMessage(text, isError = false) {
         this.message.textContent = text;
