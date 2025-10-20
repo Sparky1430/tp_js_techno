@@ -1,41 +1,50 @@
-/* QuizService
- * - fournit des questions par défaut
- * - factory pour créer un Quiz
- */
-var QuizService = (function(){
-	function defaultQuestions(){
-		return [
-			new Question('Quel est le plus grand océan du monde ?', ['Atlantique','Pacifique','Indien','Arctique'], 1),
-			new Question('Combien y a-t-il de jours dans une année bissextile ?', ['364','365','366','360'], 2),
-			new Question('Quelle est la capitale de la France ?', ['Marseille','Lyon','Paris','Nice'], 2),
-			new Question('Quelle planète est connue comme la planète rouge ?', ['Terre','Mars','Vénus','Jupiter'], 1)
-		];
-	}
+// js/services/QuizService.js
+import Question from "../models/Question.js";
 
-		return {
-			/**
-			 * createQuiz(customQuestionsOrOptions)
-			 * - If passed an array, uses it as questions.
-			 * - If passed an object {count: n}, returns a Quiz with up to n default questions.
-			 * - If omitted, returns a Quiz with default questions.
-			 */
-			createQuiz: function(customQuestionsOrOptions){
-				var qs;
-				if(Array.isArray(customQuestionsOrOptions) && customQuestionsOrOptions.length){
-					qs = customQuestionsOrOptions;
-				} else if(customQuestionsOrOptions && typeof customQuestionsOrOptions === 'object' && customQuestionsOrOptions.count){
-					var all = defaultQuestions();
-					var count = parseInt(customQuestionsOrOptions.count, 10) || all.length;
-					if(count <= 0) count = all.length;
-					// if asked more than available, just slice available
-					qs = all.slice(0, Math.min(count, all.length));
-				} else {
-					qs = defaultQuestions();
-				}
+export default class QuizService {
+    static BASE = "https://opentdb.com";
 
-				return new Quiz(qs);
-			}
-		};
-})();
+    /**
+     * Fetch categories from OpenTDB
+     * returns array of {id, name}
+     */
+    static async fetchCategories() {
+        const url = `${this.BASE}/api_category.php`;
+        const res = await fetch(url);
+        if (!res.ok) throw new Error("Impossible de récupérer les catégories");
+        const data = await res.json();
+        return data.trivia_categories || [];
+    }
 
-window.QuizService = QuizService;
+    /**
+     * Fetch questions
+     * amount: number (1-50)
+     * category: number or empty string
+     * difficulty: easy|medium|hard or empty string
+     * type: multiple (we'll use multiple)
+     */
+    static async fetchQuestions(amount = 10, category = "", difficulty = "") {
+        const params = new URLSearchParams();
+        params.append("amount", amount);
+        if (category) params.append("category", category);
+        if (difficulty) params.append("difficulty", difficulty);
+        params.append("type", "multiple");
+
+        const url = `${this.BASE}/api.php?${params.toString()}`;
+
+        try {
+            const res = await fetch(url);
+            if (!res.ok) throw new Error(`Erreur réseau: ${res.status}`);
+            const json = await res.json();
+            if (json.response_code !== 0) {
+                // response_code 0 means success
+                throw new Error(`API returned response_code ${json.response_code}`);
+            }
+            const questions = json.results.map(q => new Question(q));
+            return questions;
+        } catch (err) {
+            // rethrow with friendly message
+            throw new Error(`Impossible de récupérer les questions : ${err.message}`);
+        }
+    }
+}

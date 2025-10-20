@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
     <title>Quizz</title>
     <link rel="stylesheet" href="./css/style.css">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -10,17 +10,18 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
 </head>
 <body>
-    <div class="home">
-        <header>
+    <div class="home" id="home">
+        <header id="header">
             <h1>Quizz Master</h1>
             <p>Configure your quizz and test your knowledge</p>
         </header>
         <main>
-            <form action="">
+
+            <form id="configForm" action="">
                 <label for="nbrQuestions">Number of questions</label>
                 <select name="nbrQuestions" id="nbrQuestions">
                     <option value="5">5 questions</option>
-                    <option value="10">10 questions</option>
+                    <option value="10" selected>10 questions</option>
                     <option value="15">15 questions</option>
                     <option value="20">20 questions</option>
                 </select>
@@ -29,17 +30,46 @@
                     <option disabled selected value>Choose a category</option>
                     <option value="">categories .....</option>
                     <!-- etc etc -->
+                    <!-- categories will be populated dynamically -->
                 </select>
                 <label for="difficulty">Difficulty</label>
                 <select name="difficulty" id="difficulty">
                     <option value="easy">Easy</option>
-                    <option value="medium">Medium</option>
+                    <option value="medium" selected >Medium</option>
                     <option value="hard">Hard</option>
                 </select>
-                <button type="submit">Start Quizz</button>
+                <button type="submit" id="startBtn">Start Quizz</button>
             </form>
-        </main>
+            </main>
+        </div>
 
-    </div>
+            <!-- Quiz container (dynamically filled) -->
+            <section id="quizContainer" style="display:none;">
+                <div id="quizHeader">
+                    <div id="questionMeta"></div>
+                    <!-- <div id="scoreMeta"></div> -->
+                </div>
+                <article id="questionCard"></article>
+                <div id="navButtons">
+                    <button id="prevBtn">← Précédent</button>
+                    <button id="nextBtn">Suivant →</button>
+                </div>
+            </section>
+
+            <!-- Results -->
+            <section id="resultsContainer" style="display:none;">
+                <h2>🎉 Quiz terminé !</h2>
+                <p id="finalScore"></p>
+                <div id="resultsDetails"></div>
+                <button id="restartBtn">🔄 Nouveau quiz</button>
+            </section>
+
+            <!-- Error / messages -->
+            <div id="message" role="status" aria-live="polite"></div>
+        
+
+
+    <!-- App -->
+    <script type="module" src="./js/app.js"></script>
 </body>
 </html>
