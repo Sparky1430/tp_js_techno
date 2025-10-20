@@ -46,13 +46,22 @@
             <!-- Quiz container (dynamically filled) -->
             <section id="quizContainer" style="display:none;">
                 <div id="quizHeader">
+                    <div id="quizInfos">
+                        <span id="categoryBtn" class="categoryBtn"></span>
+                        <span id="difficultyBtn" class="difficultyBtn"></span>
+                    </div>
                     <div id="questionMeta"></div>
+                    <div id="progressBar">
+                        <div id="progressFill"></div>
+                    </div>
                     <div id="scoreMeta"></div>
                 </div>
+
                 <article id="questionCard"></article>
+
                 <div id="navButtons">
-                    <button id="prevBtn">← Précédent</button>
-                    <button id="nextBtn">Suivant →</button>
+                    <button id="prevBtn">← Previous</button>
+                    <button id="nextBtn">Next →</button>
                 </div>
             </section>
 
@@ -66,6 +75,7 @@
 
             <!-- Error / messages -->
             <div id="message" role="status" aria-live="polite"></div>
+
         
 
 
