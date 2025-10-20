@@ -10,6 +10,9 @@ export default class QuizController {
         this.category = document.getElementById("category");
         this.difficulty = document.getElementById("difficulty");
         this.startBtn = document.getElementById("startBtn");
+        this.categoryBtn = document.getElementById("categoryBtn");
+        this.difficultyBtn = document.getElementById("difficultyBtn");
+
 
         // quiz elements
         this.quizContainer = document.getElementById("quizContainer");
@@ -19,6 +22,8 @@ export default class QuizController {
         this.questionMeta = document.getElementById("questionMeta");
         this.scoreMeta = document.getElementById("scoreMeta");
         this.home = document.getElementById("home");
+        this.progressFill = document.getElementById("progressFill");
+
 
         // results
         this.resultsContainer = document.getElementById("resultsContainer");
@@ -89,7 +94,7 @@ export default class QuizController {
          
             this.home.style.display = "none";
             this.resultsContainer.style.display = "none";
-            this.quizContainer.style.display = "block";
+            this.quizContainer.style.display = "flex";
             this._clearMessage();
 
             // render first question
@@ -114,44 +119,49 @@ export default class QuizController {
         h.textContent = q.question;
         this.questionCard.appendChild(h);
 
-        // answers list
-        const ul = document.createElement("ul");
-        ul.setAttribute("role", "list");
-        ul.style.listStyle = "none";
-        ul.style.padding = "0";
+// answers list
+const ul = document.createElement("ul");
+ul.setAttribute("role", "list");
+ul.style.listStyle = "none";
+ul.style.padding = "0";
 
-        q.shuffledAnswers.forEach(answerText => {
-            const li = document.createElement("li");
-            const btn = document.createElement("button");
-            btn.className = "answerBtn";
-            btn.type = "button";
-            btn.textContent = answerText;
-            btn.dataset.answer = answerText;
+// un nom unique pour le groupe radio (pour cette question)
+const groupName = `question-${this.quiz.currentIndex}`;
 
-            // mark selected if the user already answered this question
-            const chosen = this.quiz.userAnswers[this.quiz.currentIndex];
-            if (chosen && chosen === answerText) {
-                btn.setAttribute("aria-pressed", "true");
-                btn.dataset.selected = "true";
-            } else {
-                btn.dataset.selected = "false";
-            }
+q.shuffledAnswers.forEach(answerText => {
+    const li = document.createElement("li");
 
-            btn.addEventListener("click", (e) => {
-                this._onSelectAnswer(e.currentTarget.dataset.answer, e.currentTarget);
-            });
+    const label = document.createElement("label");
+    label.style.cursor = "pointer";
 
-            li.appendChild(btn);
-            ul.appendChild(li);
-        });
+    const input = document.createElement("input");
+    input.type = "radio";
+    input.name = groupName;
+    input.value = answerText;
+    input.className = "answerRadio";
+
+    // marquer comme sélectionné si l'utilisateur a déjà répondu
+    const chosen = this.quiz.userAnswers[this.quiz.currentIndex];
+    if (chosen && chosen === answerText) {
+        input.checked = true;
+    }
+
+    input.addEventListener("change", (e) => {
+        this._onSelectAnswer(e.target.value, e.target);
+    });
+
+    label.appendChild(input);
+    label.append(` ${answerText}`); // espace pour bien séparer le texte
+
+    li.appendChild(label);
+    ul.appendChild(li);
+});
+
 
         this.questionCard.appendChild(ul);
 
         // show correct/incorrect feedback only after answered; we do not auto show it here — logic handled on selection
-        // optional: show category/difficulty
-        const meta = document.createElement("p");
-        meta.textContent = `${q.category} — ${q.difficulty}`;
-        this.questionCard.appendChild(meta);
+
 
         // update navigation button state
         this._updateNavButtons();
@@ -231,8 +241,17 @@ export default class QuizController {
 
     _updateMeta() {
         const idx = this.quiz.currentIndex + 1;
-        this.questionMeta.textContent = `Question ${idx}/${this.quiz.total}`;
+        this.questionMeta.textContent = `Question ${idx} of ${this.quiz.total}`;
         this.scoreMeta.textContent = `Score: ${this.quiz.score}/${this.quiz.total}`;
+
+        // ✅ Affichage catégorie & difficulté
+        const q = this.quiz.currentQuestion;
+        this.categoryBtn.textContent = q.category;
+        this.difficultyBtn.textContent = q.difficulty;
+
+        // calcul de la progression
+        const progressPercent = (idx / this.quiz.total) * 100;
+        this.progressFill.style.width = `${progressPercent}%`;
     }
 
     _updateNavButtons() {
