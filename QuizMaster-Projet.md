@@ -57,7 +57,11 @@ QuizMaster/
 
 - **Matin (3h)**
 
+<<<<<<< HEAD
   - [X] Setup du projet et structure des fichiers
+=======
+  - [ ] Setup du projet et structure des fichiers
+>>>>>>> 6a313247f1572ed8014d477045d74c9e95b00d69
   - [ ] Création des modèles (Quiz, Question)
   - [ ] Implémentation du service API (QuizService)
   - [ ] Tests de récupération des données
