@@ -290,4 +290,3 @@ q.shuffledAnswers.forEach(answerText => {
         this.message.textContent = "";
     }
 }
-
