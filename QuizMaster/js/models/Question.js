@@ -36,3 +36,4 @@ export default class Question {
         return arr;
     }
 }
+

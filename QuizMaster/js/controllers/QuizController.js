@@ -388,37 +388,3 @@ _showResults() {
         this.message.textContent = "";
     }
 }
-
-// Thème: light par défaut (aucun attribut). On stocke dans localStorage.
-(function setupThemeToggle() {
-  const root = document.documentElement;
-  const btn = document.getElementById('themeToggle');
-
-  function apply(label, isDark) {
-    btn.textContent = isDark ? '☀️ Light mode' : '🌙 Dark mode';
-    btn.setAttribute('aria-pressed', String(isDark));
-  }
-
-  // Init depuis storage
-  const stored = localStorage.getItem('theme'); // 'dark' | 'light' | null
-  if (stored === 'dark') {
-    root.setAttribute('data-theme', 'dark');
-    apply('Dark', true);
-  } else {
-    root.removeAttribute('data-theme');
-    apply('Light', false);
-  }
-
-  btn.addEventListener('click', () => {
-    const isDark = root.getAttribute('data-theme') === 'dark';
-    if (isDark) {
-      root.removeAttribute('data-theme');     // repasse en light
-      localStorage.setItem('theme', 'light');
-      apply('Light', false);
-    } else {
-      root.setAttribute('data-theme', 'dark');
-      localStorage.setItem('theme', 'dark');
-      apply('Dark', true);
-    }
-  });
-})();
