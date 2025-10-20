@@ -245,16 +245,17 @@ body {
   width: 100%;
   border: 1px solid var(--border);
   background: var(--card);
-  padding: 8px 12px;
   border-radius: 12px;
 }
 #quizContainer #questionCard ul li label {
-  display: flex;
-  flex-direction: row;
-  align-items: center;
-  justify-content: start;
-  gap: 8px;
-  color: var(--text);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: start;
+    gap: 8px;
+    color: var(--text);
+    padding: 8px 12px;
+    border-radius: 12px;
 }
 
 /* Nav buttons */
