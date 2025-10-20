@@ -237,6 +237,7 @@ q.shuffledAnswers.forEach(answerText => {
         this._clearMessage();
         // keep selects as they were
         this.quiz = null;
+        this.startQuiz(); 
     }
 
     _updateMeta() {
@@ -376,6 +377,7 @@ _showResults() {
     // Afficher la page résultats / cacher le quiz
     this.quizContainer.style.display = "none";
     this.resultsContainer.style.display = "flex";
+
 }
 
 
