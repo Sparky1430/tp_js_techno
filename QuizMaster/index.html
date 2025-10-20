@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quizz</title>
+    <link rel="stylesheet" href="./css/style.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="home">
+        <header>
+            <h1>Quizz Master</h1>
+            <p>Configure your quizz and test your knowledge</p>
+        </header>
+        <main>
+            <form action="">
+                <label for="nbrQuestions"></label>
+                <select name="nbrQuestions" id="nbrQuestions">
+                    <option value="5">5 questions</option>
+                    <option value="10">10 questions</option>
+                    <option value="15">15 questions</option>
+                    <option value="20">20 questions</option>
+                </select>
+                <label for="category"></label>
+                <select name="category" id="category">
+                    <option value="">categories .....</option>
+                    <!-- etc etc -->
+                </select>
+                <label for="difficulty"></label>
+                <select name="difficulty" id="difficulty">
+                    <option value="easy">Easy</option>
+                    <option value="medium">Medium</option>
+                    <option value="hard">Hard</option>
+                </select>
+                <button type="submit">Start Quizz</button>
+            </form>
+        </main>
+
+    </div>
+</body>
+</html>
