@@ -16,13 +16,13 @@ Développer une application web de quiz interactif en utilisant l'architecture M
 
 ## 🛠️ Technologies utilisées
 
-| Technologie | Usage |
-|-------------|-------|
-| **HTML5** | Structure de l'application |
-| **CSS3** ou **Tailwind CSS** | Stylisation et responsive design |
-| **JavaScript ES6+** | Logique métier et architecture Model-Service-Controller |
-| **Fetch API** | Consommation de l'API externe |
-| **Open Trivia Database API** | Source des questions de quiz |
+| Technologie                              | Usage                                                    |
+| ---------------------------------------- | -------------------------------------------------------- |
+| **HTML5**                          | Structure de l'application                               |
+| **CSS3** ou **Tailwind CSS** | Stylisation et responsive design                         |
+| **JavaScript ES6+**                | Logique métier et architecture Model-Service-Controller |
+| **Fetch API**                      | Consommation de l'API externe                            |
+| **Open Trivia Database API**       | Source des questions de quiz                             |
 
 ## 🗂️ Structure Model-Service-Controller attendue
 
@@ -45,35 +45,39 @@ QuizMaster/
 
 ### 📋 Rôles de chaque couche :
 
-| Couche | Responsabilité | Exemples |
-|--------|---------------|----------|
-| **Models** | Représentation des données et logique métier | `Quiz.js`, `Question.js` |
-| **Services** | Communication avec l'API et gestion des données | `QuizService.js` |
-| **Controllers** | Orchestration entre models, services et DOM | `QuizController.js` |
+| Couche                | Responsabilité                                  | Exemples                     |
+| --------------------- | ------------------------------------------------ | ---------------------------- |
+| **Models**      | Représentation des données et logique métier  | `Quiz.js`, `Question.js` |
+| **Services**    | Communication avec l'API et gestion des données | `QuizService.js`           |
+| **Controllers** | Orchestration entre models, services et DOM      | `QuizController.js`        |
 
 ## 📅 Planning sur 2 jours
 
 ### Jour 1 🌅
+
 - **Matin (3h)**
+
   - [ ] Setup du projet et structure des fichiers
   - [ ] Création des modèles (Quiz, Question)
   - [ ] Implémentation du service API (QuizService)
   - [ ] Tests de récupération des données
-
 - **Après-midi (3h)**
+
   - [ ] Développement du contrôleur principal
   - [ ] Intégration Model-Service-Controller
   - [ ] Interface utilisateur de base (HTML/CSS)
   - [ ] Affichage des premières questions
 
 ### Jour 2 🌄
+
 - **Matin (3h)**
+
   - [ ] Gestion des réponses et scoring
   - [ ] Système de navigation entre questions
   - [ ] Affichage des résultats finaux
   - [ ] Gestion des erreurs dans le service
-
 - **Après-midi (3h)**
+
   - [ ] Stylisation et responsive design
   - [ ] Fonctionnalités bonus
   - [ ] Tests et débogage
@@ -84,17 +88,20 @@ QuizMaster/
 **Open Trivia Database** : [https://opentdb.com/](https://opentdb.com/)
 
 ### Exemple d'URL d'API :
+
 ```
 https://opentdb.com/api.php?amount=10&category=9&difficulty=easy&type=multiple
 ```
 
 ### Paramètres disponibles :
+
 - `amount` : Nombre de questions (1-50)
 - `category` : Catégorie (9=General Knowledge, 17=Science, etc.)
 - `difficulty` : easy, medium, hard
 - `type` : multiple, boolean
 
 ### Exemple de réponse JSON :
+
 ```json
 {
   "response_code": 0,
@@ -114,6 +121,7 @@ https://opentdb.com/api.php?amount=10&category=9&difficulty=easy&type=multiple
 ## ✅ Fonctionnalités obligatoires
 
 ### 🎯 Fonctionnalités de base
+
 - [ ] **Configuration du quiz** : Choisir le nombre de questions, catégorie, difficulté
 - [ ] **Affichage des questions** : Une question à la fois avec les choix multiples
 - [ ] **Gestion des réponses** : Sélection et validation des réponses
@@ -122,6 +130,7 @@ https://opentdb.com/api.php?amount=10&category=9&difficulty=easy&type=multiple
 - [ ] **Résultats finaux** : Récapitulatif avec score final et pourcentage
 
 ### 🔧 Fonctionnalités techniques
+
 - [ ] **Architecture Model-Service-Controller** respectée
 - [ ] **Gestion d'erreurs** pour les appels API dans le service
 - [ ] **Interface responsive** (mobile-friendly)
@@ -142,20 +151,21 @@ https://opentdb.com/api.php?amount=10&category=9&difficulty=easy&type=multiple
 
 ## 📊 Critères d'évaluation
 
-| Critère | Points | Description |
-|---------|--------|-------------|
-| **Architecture Model-Service-Controller** | /4 | Respect de la séparation des responsabilités |
-| **Fonctionnalités** | /4 | Implémentation des fonctionnalités obligatoires |
-| **Qualité du code** | /3 | Lisibilité, organisation, commentaires |
-| **Interface utilisateur** | /3 | Design, ergonomie, responsive |
-| **Gestion d'erreurs** | /2 | Robustesse de l'application et du service |
-| **Fonctionnalités bonus** | /4 | Créativité et fonctionnalités supplémentaires |
+| Critère                                        | Points | Description                                       |
+| ----------------------------------------------- | ------ | ------------------------------------------------- |
+| **Architecture Model-Service-Controller** | /4     | Respect de la séparation des responsabilités    |
+| **Fonctionnalités**                      | /4     | Implémentation des fonctionnalités obligatoires |
+| **Qualité du code**                      | /3     | Lisibilité, organisation, commentaires           |
+| **Interface utilisateur**                 | /3     | Design, ergonomie, responsive                     |
+| **Gestion d'erreurs**                     | /2     | Robustesse de l'application et du service         |
+| **Fonctionnalités bonus**                | /4     | Créativité et fonctionnalités supplémentaires |
 
 **Total : /20**
 
 ## 🧪 Exemple de rendu attendu
 
 ### Interface de configuration :
+
 ```
 🎮 QuizMaster
 
@@ -168,6 +178,7 @@ Configurez votre quiz :
 ```
 
 ### Interface de jeu :
+
 ```
 Question 3/10                                    Score: 2/2
 
@@ -184,6 +195,7 @@ Quelle est la capitale de la France ?
 ```
 
 ### Interface de résultats :
+
 ```
 🎉 Quiz terminé !
 
@@ -200,6 +212,7 @@ Votre score : 8/10 (80%)
 ## 💡 Structure de code suggérée
 
 ### Models/Quiz.js
+
 ```javascript
 class Quiz {
     constructor(questions = []) {
@@ -208,7 +221,7 @@ class Quiz {
         this.score = 0;
         // ...
     }
-    
+  
     getCurrentQuestion() { /* ... */ }
     submitAnswer(answer) { /* ... */ }
     // ...
@@ -216,6 +229,7 @@ class Quiz {
 ```
 
 ### Services/QuizService.js
+
 ```javascript
 class QuizService {
     static async fetchQuestions(amount, category, difficulty) {
@@ -227,13 +241,14 @@ class QuizService {
 ```
 
 ### Controllers/QuizController.js
+
 ```javascript
 class QuizController {
     constructor() {
         this.quiz = null;
         this.initEventListeners();
     }
-    
+  
     async startQuiz(config) {
         // Utilise QuizService pour récupérer les questions
         // Crée un nouveau Quiz
