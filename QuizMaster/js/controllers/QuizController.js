@@ -183,8 +183,7 @@ export default class QuizController {
     // submit to model
     this.quiz.answerCurrentQuestion(answer);
 
-    // stop timer when user answers
-    this._clearTimer && this._clearTimer();
+  // le timer continue même si l'utilisateur répond ; on n'appelle pas _clearTimer()
 
         // visually mark selected button and unmark others
     const allBtns = this.questionCard.querySelectorAll(".answerBtn, .answerRadio, button");
@@ -295,7 +294,7 @@ export default class QuizController {
     const self = this;
     this._timer = setInterval(() => self._tick(), 1000);
   }
-
+  //gère le temps restant pour répondre à une question
   _tick() {
     this._timeLeft -= 1;
     if (this._timeLeft <= 0) {
@@ -320,7 +319,16 @@ export default class QuizController {
   _onTimeUp() {
     // show a short message
     this._showMessage && this._showMessage('Temps écoulé pour cette question.', false);
-    // move to next after a short pause
+    // If it's the last question, show results immediately (even if unanswered)
+    if (this.quiz && this.quiz.currentIndex === this.quiz.total - 1) {
+      // small delay so the user sees the "Temps écoulé" message
+      setTimeout(() => {
+        this._showResults && this._showResults();
+      }, 600);
+      return;
+    }
+
+    // otherwise move to next after a short pause
     setTimeout(() => {
       if (!this.quiz) return;
       const moved = this.quiz.goNext();
