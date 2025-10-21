@@ -36,6 +36,11 @@ export default class QuizController {
 
         this.quiz = null;
 
+    // timer for each question (seconds)
+    this._questionTime = 10; // default 10 seconds
+    this._timeLeft = 0;
+    this._timer = null;
+
         this._bindEvents();
         this._init();
     }
@@ -51,14 +56,16 @@ export default class QuizController {
     }
 
     _bindEvents() {
-        this.form.addEventListener("submit", (e) => {
-            e.preventDefault();
-            this.startQuiz();
-        });
+    if (this.form) {
+      this.form.addEventListener("submit", (e) => {
+        e.preventDefault();
+        this.startQuiz();
+      });
+    }
 
-        this.prevBtn.addEventListener("click", () => this._onPrev());
-        this.nextBtn.addEventListener("click", () => this._onNext());
-        this.restartBtn.addEventListener("click", () => this._onRestart());
+    if (this.prevBtn) this.prevBtn.addEventListener("click", () => this._onPrev());
+    if (this.nextBtn) this.nextBtn.addEventListener("click", () => this._onNext());
+    if (this.restartBtn) this.restartBtn.addEventListener("click", () => this._onRestart());
     }
 
     _populateCategories(categories) {
@@ -73,13 +80,13 @@ export default class QuizController {
 
     async startQuiz() {
         // read config
-        const amount = Number(this.nbrQuestions.value) || 10;
-        const category = this.category.value || "";
-        const difficulty = this.difficulty.value || "";
+    const amount = Number(this.nbrQuestions?.value) || 10;
+    const category = this.category?.value || "";
+    const difficulty = this.difficulty?.value || "";
 
-        // UI feedback
-        this._showMessage("Récupération des questions...", false);
-        this.startBtn.disabled = true;
+    // UI feedback
+    this._showMessage && this._showMessage("Récupération des questions...", false);
+    if (this.startBtn) this.startBtn.disabled = true;
 
         try {
             const questions = await QuizService.fetchQuestions(amount, category, difficulty);
@@ -92,24 +99,25 @@ export default class QuizController {
 
             // hide config form, show quiz container
          
-            this.home.style.display = "none";
-            this.resultsContainer.style.display = "none";
-            this.quizContainer.style.display = "flex";
-            this._clearMessage();
+            if (this.home) this.home.style.display = "none";
+            if (this.resultsContainer) this.resultsContainer.style.display = "none";
+            if (this.quizContainer) this.quizContainer.style.display = "flex";
+            this._clearMessage && this._clearMessage();
 
             // render first question
-            this._renderCurrentQuestion();
-            this._updateMeta();
+            this._renderCurrentQuestion && this._renderCurrentQuestion();
+            this._updateMeta && this._updateMeta();
         } catch (err) {
             this._showMessage(err.message, true);
-        } finally {
-            this.startBtn.disabled = false;
-        }
+    } finally {
+      if (this.startBtn) this.startBtn.disabled = false;
+    }
     }
 
     _renderCurrentQuestion() {
-        const q = this.quiz.currentQuestion;
-        if (!q) return;
+    if (!this.quiz || !this.questionCard) return;
+    const q = this.quiz.currentQuestion;
+    if (!q) return;
 
         // Build question HTML (no styling - your CSS later)
         this.questionCard.innerHTML = "";
@@ -119,60 +127,67 @@ export default class QuizController {
         h.textContent = q.question;
         this.questionCard.appendChild(h);
 
-// answers list
-const ul = document.createElement("ul");
-ul.setAttribute("role", "list");
-ul.style.listStyle = "none";
-ul.style.padding = "0";
+        // answers list
+        const ul = document.createElement("ul");
+        ul.setAttribute("role", "list");
+        ul.style.listStyle = "none";
+        ul.style.padding = "0";
 
-// un nom unique pour le groupe radio (pour cette question)
-const groupName = `question-${this.quiz.currentIndex}`;
+        // un nom unique pour le groupe radio (pour cette question)
+        const groupName = `question-${this.quiz.currentIndex}`;
 
-q.shuffledAnswers.forEach(answerText => {
-    const li = document.createElement("li");
+  q.shuffledAnswers.forEach(answerText => {
+          const li = document.createElement("li");
 
-    const label = document.createElement("label");
-    label.style.cursor = "pointer";
+          const label = document.createElement("label");
+          label.style.cursor = "pointer";
 
-    const input = document.createElement("input");
-    input.type = "radio";
-    input.name = groupName;
-    input.value = answerText;
-    input.className = "answerRadio";
+          const input = document.createElement("input");
+          input.type = "radio";
+          input.name = groupName;
+          input.value = answerText;
+          input.className = "answerRadio";
 
-    // marquer comme sélectionné si l'utilisateur a déjà répondu
-    const chosen = this.quiz.userAnswers[this.quiz.currentIndex];
-    if (chosen && chosen === answerText) {
-        input.checked = true;
-    }
+          // marquer comme sélectionné si l'utilisateur a déjà répondu
+          const chosen = this.quiz.userAnswers[this.quiz.currentIndex];
+          if (chosen && chosen === answerText) {
+            input.checked = true;
+          }
 
-    input.addEventListener("change", (e) => {
-        this._onSelectAnswer(e.target.value, e.target);
-    });
+          input.addEventListener("change", (e) => {
+            this._onSelectAnswer(e.target.value, e.target);
+          });
 
-    label.appendChild(input);
-    label.append(` ${answerText}`); // espace pour bien séparer le texte
+          label.appendChild(input);
+          label.append(` ${answerText}`); // espace pour bien séparer le texte
 
-    li.appendChild(label);
-    ul.appendChild(li);
-});
+          li.appendChild(label);
+          ul.appendChild(li);
+      });
 
 
         this.questionCard.appendChild(ul);
 
-        // show correct/incorrect feedback only after answered; we do not auto show it here — logic handled on selection
+      // show correct/incorrect feedback only after answered; we do not auto show it here — logic handled on selection
 
 
-        // update navigation button state
-        this._updateNavButtons();
+  // update navigation button state
+  this._updateNavButtons && this._updateNavButtons();
+
+  // start timer for this question
+  this._startTimer && this._startTimer();
     }
 
     _onSelectAnswer(answer, btnElem) {
-        // submit to model
-        this.quiz.answerCurrentQuestion(answer);
+    if (!this.quiz) return;
+    // submit to model
+    this.quiz.answerCurrentQuestion(answer);
+
+    // stop timer when user answers
+    this._clearTimer && this._clearTimer();
 
         // visually mark selected button and unmark others
-        const allBtns = this.questionCard.querySelectorAll(".answerBtn");
+    const allBtns = this.questionCard.querySelectorAll(".answerBtn, .answerRadio, button");
         allBtns.forEach(b => {
             b.dataset.selected = "false";
             b.setAttribute("aria-pressed", "false");
@@ -180,8 +195,10 @@ q.shuffledAnswers.forEach(answerText => {
             b.classList.remove("incorrect");
         });
 
-        btnElem.dataset.selected = "true";
-        btnElem.setAttribute("aria-pressed", "true");
+    if (btnElem) {
+      btnElem.dataset.selected = "true";
+      btnElem.setAttribute("aria-pressed", "true");
+    }
 
         // add simple feedback classes (you'll style them later)
         if (answer === this.quiz.currentQuestion.correctAnswer) {
@@ -196,69 +213,127 @@ q.shuffledAnswers.forEach(answerText => {
             });
         }
 
-        // update score display
-        this._updateMeta();
+  // update score display
+  this._updateMeta && this._updateMeta();
 
         // if this was the last question and all answered, show results
-        const atLast = this.quiz.currentIndex === this.quiz.total - 1;
-        if (atLast && this.quiz.isFinished()) {
-            this._showResults();
-        }
+    const atLast = this.quiz.currentIndex === this.quiz.total - 1;
+    if (atLast && this.quiz.isFinished()) {
+      this._showResults && this._showResults();
+    }
     }
 
     _onNext() {
+        // clear any running timer before navigating
+        this._clearTimer && this._clearTimer();
+
+        if (!this.quiz) return;
         const moved = this.quiz.goNext();
+
         if (moved) {
-            this._renderCurrentQuestion();
-            this._updateMeta();
+            this._renderCurrentQuestion && this._renderCurrentQuestion();
+            this._updateMeta && this._updateMeta();
+            return;
+        }
+
+        // si on n'a pas pu avancer, on est probablement sur la dernière question
+        if (this.quiz.isFinished()) {
+            this._showResults && this._showResults();
         } else {
-            // if not moved, probably at last
-            if (this.quiz.isFinished()) {
-                this._showResults();
-            } else {
-                this._showMessage("Vous êtes à la dernière question. Répondez puis appuyez sur 'Nouveau quiz' ou 'Précédent'.", false);
-            }
+            this._showMessage && this._showMessage("Vous êtes à la dernière question. Répondez puis utilisez Précédent ou Recommencer.", false);
         }
     }
 
     _onPrev() {
-        const moved = this.quiz.goPrev();
-        if (moved) {
-            this._renderCurrentQuestion();
-            this._updateMeta();
-        }
+    if (!this.quiz) return;
+    const moved = this.quiz.goPrev();
+    if (moved) {
+      this._renderCurrentQuestion && this._renderCurrentQuestion();
+      this._updateMeta && this._updateMeta();
+    }
     }
 
     _onRestart() {
         // reset UI
-        this.form.style.display = "block";
-        this.quizContainer.style.display = "none";
-        this.resultsContainer.style.display = "none";
-        this._clearMessage();
+    if (this.form) this.form.style.display = "block";
+    if (this.quizContainer) this.quizContainer.style.display = "none";
+    if (this.resultsContainer) this.resultsContainer.style.display = "none";
+    this._clearMessage && this._clearMessage();
         // keep selects as they were
         this.quiz = null;
-        this.startQuiz(); 
+        window.location.href = 'index.html';
     }
 
     _updateMeta() {
-        const idx = this.quiz.currentIndex + 1;
-        this.questionMeta.textContent = `Question ${idx} of ${this.quiz.total}`;
-        this.scoreMeta.textContent = `Score: ${this.quiz.score}/${this.quiz.total}`;
+    if (!this.quiz) return;
+    const idx = this.quiz.currentIndex + 1;
+    if (this.questionMeta) this.questionMeta.textContent = `Question ${idx} of ${this.quiz.total}`;
 
-        // ✅ Affichage catégorie & difficulté
-        const q = this.quiz.currentQuestion;
-        this.categoryBtn.textContent = q.category;
-        this.difficultyBtn.textContent = q.difficulty;
+    // ✅ Affichage catégorie & difficulté
+    const q = this.quiz.currentQuestion;
+    if (this.categoryBtn) this.categoryBtn.textContent = q?.category || '';
+    if (this.difficultyBtn) this.difficultyBtn.textContent = q?.difficulty || '';
 
-        // calcul de la progression
-        const progressPercent = (idx / this.quiz.total) * 100;
-        this.progressFill.style.width = `${progressPercent}%`;
+    // calcul de la progression
+    const progressPercent = (idx / this.quiz.total) * 100;
+    if (this.progressFill) this.progressFill.style.width = `${progressPercent}%`;
     }
 
     _updateNavButtons() {
-        this.prevBtn.disabled = this.quiz.currentIndex === 0;
-        this.nextBtn.disabled = this.quiz.currentIndex === this.quiz.total - 1 && !this.quiz.isFinished();
+    if (!this.quiz) return;
+    if (this.prevBtn) this.prevBtn.disabled = this.quiz.currentIndex === 0;
+    if (this.nextBtn) this.nextBtn.disabled = this.quiz.currentIndex === this.quiz.total - 1 && !this.quiz.isFinished();
     }
+
+  // Timer methods
+  _startTimer() {
+    // clear any previous timer
+    this._clearTimer && this._clearTimer();
+    this._timeLeft = this._questionTime;
+    // initial display
+    this._showMessage && this._showMessage(`Temps restant pour répondre : ${this._timeLeft} secondes`, false);
+    const self = this;
+    this._timer = setInterval(() => self._tick(), 1000);
+  }
+
+  _tick() {
+    this._timeLeft -= 1;
+    if (this._timeLeft <= 0) {
+      this._clearTimer && this._clearTimer();
+      this._onTimeUp && this._onTimeUp();
+      return;
+    }
+    this._showMessage && this._showMessage(`Temps restant pour répondre : ${this._timeLeft} secondes`, false);
+  }
+
+  _clearTimer() {
+    if (this._timer) {
+      clearInterval(this._timer);
+      this._timer = null;
+    }
+    // remove timer message if it was the timer one
+    if (this.message && this.message.textContent && this.message.textContent.startsWith('Temps restant')) {
+      this._clearMessage && this._clearMessage();
+    }
+  }
+
+  _onTimeUp() {
+    // show a short message
+    this._showMessage && this._showMessage('Temps écoulé pour cette question.', false);
+    // move to next after a short pause
+    setTimeout(() => {
+      if (!this.quiz) return;
+      const moved = this.quiz.goNext();
+      if (moved) {
+        this._renderCurrentQuestion && this._renderCurrentQuestion();
+        this._updateMeta && this._updateMeta();
+      } else {
+        if (this.quiz.isFinished()) {
+          this._showResults && this._showResults();
+        }
+      }
+    }, 800);
+  }
 
 _showResults() {
     const r = this.quiz.results(); // { score, total, percent, details: [...] }
@@ -377,7 +452,6 @@ _showResults() {
     // Afficher la page résultats / cacher le quiz
     this.quizContainer.style.display = "none";
     this.resultsContainer.style.display = "flex";
-
 }
 
 
@@ -390,6 +464,7 @@ _showResults() {
         this.message.textContent = "";
     }
 }
+
 
 // Thème: light par défaut (aucun attribut). On stocke dans localStorage.
 (function setupThemeToggle() {
@@ -424,4 +499,3 @@ _showResults() {
     }
   });
 })();
-}
